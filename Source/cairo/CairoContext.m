@@ -32,6 +32,7 @@
 
 #include "cairo/CairoContext.h"
 #include "cairo/CairoSurface.h"
+#include "cairo/CairoImageSurface.h"
 #include "cairo/CairoPSSurface.h"
 #include "cairo/CairoPDFSurface.h"
 #include "cairo/CairoFontInfo.h"
@@ -90,6 +91,33 @@
 + (BOOL) handlesPS
 {
   return YES;
+}
+
+- (id) initWithContextInfo: (NSDictionary *)info
+{
+  self = [super initWithContextInfo: info];
+  if (self != nil)
+    {
+      id dest;
+
+      // Special handling for window drawing
+      dest = [info objectForKey: NSGraphicsContextDestinationAttributeName];
+      if (dest != nil)
+        {
+	  if ([dest isKindOfClass: [NSBitmapImageRep class]])
+            {
+              CairoSurface *surface;
+
+              surface = [[CairoImageSurface alloc] initWithDevice: dest];
+	      NSSize size = [surface size];
+
+              [CGSTATE GSSetSurface: surface : 0.0 : size.height];
+              [surface release];
+            }
+	}
+    }
+
+  return self;
 }
 
 - (BOOL) supportsDrawGState
