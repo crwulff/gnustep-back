@@ -31,6 +31,7 @@
 #include <AppKit/NSAffineTransform.h>
 #include <AppKit/NSBezierPath.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSColorSpace.h>
 #include <AppKit/NSGradient.h>
 #include <AppKit/NSGraphics.h>
 #include "cairo/CairoGState.h"
@@ -1563,6 +1564,9 @@ doesn't support to use the receiver cairo target as the source. */
           [gradient getColor: &color
                     location: &location
                      atIndex: i];
+
+          color = [color colorUsingColorSpace: [NSColorSpace deviceRGBColorSpace]];
+
           red = [color redComponent];
           green = [color greenComponent];
           blue = [color blueComponent];
